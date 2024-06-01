@@ -1,4 +1,22 @@
 #!/usr/bin/make -f
 
+# Avoid building programs
+export DH_GOLANG_EXCLUDES := \
+	pke/kyber/internal/common/asm \
+	sign/dilithium/internal/common/asm \
+	simd/keccakf1600/internal/asm
+
+# Add testdata into library package
+export DH_GOLANG_INSTALL_EXTRA := \
+	dh/sidh/testdata \
+	dh/x25519/testdata \
+	dh/x448/testdata \
+	dh/csidh/testdata \
+	sign/ed25519/testdata \
+	sign/ed448/testdata
+
 %:
-	dh $@
+	dh $@ --buildsystem=golang --with=golang
+
+override_dh_auto_test:
+	dh_auto_test -- -timeout 30m
